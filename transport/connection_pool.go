@@ -846,9 +846,12 @@ func (handler *connectionHandler) Serve(done func()) {
 
 	// watch for cancel
 	go func() {
-		<-handler.cancel
+		select {
+		case <-handler.cancel:
+			handler.Cancel()
 
-		handler.Cancel()
+		case <-handler.done:
+		}
 	}()
 
 	// start connection serving goroutines
